@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="css/libs.min.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/libs.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Grabber <span id="num"></span><span id="article"></span></h1>
+        </div>
+        <p>
+            <select class="form-control">
+                <option value="false" selected disabled>выберите</option>
+                <option value="https://habrahabr.ru/">Habrahabr</option>
+                <option value="https://geektimes.ru/">Geektimes</option>
+            </select>
+            <input id="range" type="range" min="1" max="10" step="1" value="{{num}}" />
+        </p>
+    </div>
+    <footer class="footer">
+        <div class="container">
+
+        </div>
+    </footer>
+    <script>
+        $(function () {
+            var $select = $(".form-control"),
+                $range = $('#range'),
+                $num = $('#num'),
+                $article = $('#article');
+            $num.text($range.val());
+            $article.text(form($range.val(), ['Статьи', 'Статей']));
+
+            $range.change(function () {
+                $num.text($range.val());
+                $article.text(form($range.val(), ['Статьи', 'Статей']));
+            });
+
+            $select.change(function () {
+                $(".alert").remove();
+                $.post('/ajax', { 'url': $select.val(), 'num': $range.val() }, function (data) {
+                    if (data.status == 'error') {
+                        alert('error getting data')
+                        return;
+                    }
+                    $.each(data.data, function (index, param) {
+                        $(".footer .container")
+                        .append('<div class="alert alert-info" role="alert"><b>'
+                             + param.title + "</b><br /> " 
+                             + param.content + "<br />" 
+                             + "<a href='" + param.more + "' target='_blank'>" + param.moreTxt + "</a>" + "</div>"
+                             );
+                    });
+                }, 'json')
+                    .fail(function () {
+                        alert('error connect');
+                    });
+            });
+            function form(n, arr) {
+                n = n % 100;
+                var n1 = n % 10;
+                if (n > 10 && n < 20) return arr[1];
+                if (n1 > 1 && n1 < 5) return arr[1];
+                if (n1 == 1) return arr[0];
+                return arr[1];
+            }
+        });
+    </script>
+</body>
+
+</html>
