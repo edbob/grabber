@@ -2,7 +2,7 @@ var gulp = require('gulp'),
   browserSync = require('browser-sync'),
   reload = browserSync.reload,
   nodemon = require('gulp-nodemon'),
-  scss = require('gulp-sass'),
+  sass = require('gulp-sass'),
   concat = require('gulp-concat'),
   uglifyJS = require('gulp-uglifyjs'),
   cssnano = require('gulp-cssnano'),
@@ -45,9 +45,9 @@ gulp.task('nodemon', function (cb) {
     });
 });
 
-gulp.task('scss', function () {
-  return gulp.src('app/scss/**/*.scss')
-    .pipe(scss())
+gulp.task('sass', function () {
+  return gulp.src('app/sass/**/*.sass')
+    .pipe(sass())
     .pipe(autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7']))
     .pipe(gulp.dest('app/css'))
 });
@@ -62,14 +62,14 @@ gulp.task('scripts', function () {
     .pipe(gulp.dest('app/js'))
 });
 
-gulp.task('css-libs', ['scss'], function () {
+gulp.task('css-libs', ['sass'], function () {
   return gulp.src('app/css/libs.css')
     .pipe(cssnano())
     .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('app/css'));
 });
 
-gulp.task('build', ['clean', 'img', 'scss', 'scripts'], function () {
+gulp.task('build', ['clean', 'img', 'sass', 'scripts'], function () {
   var buildCss = gulp.src([
     'app/css/main.css',
     'app/css/libs.min.css'
@@ -96,13 +96,13 @@ gulp.task('img', function(){
   .pipe(cache(imagemin({
     interlaced: true,
     progressive: true,
-    svgPlugins: [{removeViewBox: false}],
-    une: [pngquant()]
+    svgoPlugins: [{removeViewBox: false}],
+    use: [pngquant()]
   })))
   .pipe(gulp.dest('dist/img'));
 });
 
 gulp.task('default', ['browser-sync', 'css-libs', 'scripts'], function () {
-  gulp.watch('app/scss/*.scss', ['scss']);
-  gulp.watch(['app/*.hbs', 'app/scss/*.scss'], reload);
+  gulp.watch('app/sass/*.sass', ['sass']);
+  gulp.watch(['app/*.hbs', 'app/sass/*.sass'], reload);
 });
