@@ -7,9 +7,9 @@ var express = require('express'),
     cheerio = require('cheerio'),
     hbs = require('hbs'),
     app = express();
-app.use(express.static(path.join(__dirname, 'app')));
-app.use(favicon(path.join(__dirname, 'app/img', 'favicon.ico')));
-app.set('views', path.join(__dirname, 'app'));
+app.use(express.static(path.join(__dirname, 'dist')));
+app.use(favicon(path.join(__dirname, 'dist/img', 'favicon.ico')));
+app.set('views', path.join(__dirname, 'dist'));
 app.set('view engine', 'hbs');
 
 app.use(bodyParser.json());
